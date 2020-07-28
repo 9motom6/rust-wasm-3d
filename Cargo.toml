@@ -1,5 +1,5 @@
 [package]
-name = "rust-3d-demo"
+name = "rust_3d_wasm"
 version = "0.1.0"
 authors = ["Horys"]
 edition = "2018"
