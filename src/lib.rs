@@ -8,6 +8,22 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-pub fn say_hello_from_rust() {
-    log("Hello from Rust");
+pub struct GraphicsClient {
+}
+
+#[wasm_bindgen]
+impl GraphicsClient {
+
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> GraphicsClient {
+        log("[RUST] Graphics client was initialized");
+        GraphicsClient {}
+    }
+
+    pub fn update(&mut self, time: f32, height: f32, width: f32) -> Result<(), JsValue> {
+        Ok(())
+    }
+
+    pub fn render(&self) {
+    }
 }
