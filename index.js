@@ -26,9 +26,6 @@ rust.then(m => {
         return;
     }
 
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
     const FPS_THROTTLE = 1000.0 / 60.0; // sets 60 FPS
     let lastDrawTime = -1; // in ms
     const graphicsClient = new m.GraphicsClient();
