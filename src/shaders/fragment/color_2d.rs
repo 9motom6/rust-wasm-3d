@@ -5,6 +5,6 @@ pub const SHADER: &str = r#"
     uniform float uOpacity;
 
     void main() {
-        gl_FragColor = vec4(uColor.r, uColor.g, uColor.b, uColor.r * uOpacity);
+        gl_FragColor = vec4(uColor.r, uColor.g, uColor.b, uColor.a * uOpacity);
     }
 "#;

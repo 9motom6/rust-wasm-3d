@@ -43,7 +43,7 @@ impl GraphicsClient {
         self.gl.clear(GL::COLOR_BUFFER_BIT | GL::DEPTH_BUFFER_BIT);
 
         self.program_color_2d.render(
-            &self.gl, 0., 10., 0., 10., 10., 10.,
+            &self.gl, 3., 10., 5., 10., 20., 30.,
         )
     }
 }

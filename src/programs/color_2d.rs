@@ -14,7 +14,7 @@ pub struct Color2D {
 }
 
 impl Color2D {
-    pub fn new(gl: &GL) -> Self {
+    pub fn new(gl: &WebGlRenderingContext) -> Self {
         let program = cf::link_program(
             &gl,
             super::super::shaders::vertex::color_2d::SHADER,
@@ -31,16 +31,19 @@ impl Color2D {
         ];
 
         let memory_buffer = wasm_bindgen::memory()
-            .dyn_into::<WebAssembly::Memory>().unwrap().buffer();
+            .dyn_into::<WebAssembly::Memory>()
+            .unwrap()
+            .buffer();
 
         let vertices_location = vertices_rect.as_ptr() as u32 / 4;
         let vert_array = js_sys::Float32Array::new(&memory_buffer).subarray(
             vertices_location,
             vertices_location + vertices_rect.len() as u32,
         );
-        let buffer_rect = gl.create_buffer().ok_or("Could noc create buffer").unwrap();
+        let buffer_rect = gl.create_buffer().ok_or("Could not create buffer").unwrap();
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&buffer_rect));
         gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &vert_array, GL::STATIC_DRAW);
+
         Self {
             u_color: gl.get_uniform_location(&program, "uColor").unwrap(),
             u_opacity: gl.get_uniform_location(&program, "uOpacity").unwrap(),
@@ -50,6 +53,7 @@ impl Color2D {
             program,
         }
     }
+
     pub fn render(
         &self,
         gl: &WebGlRenderingContext,
