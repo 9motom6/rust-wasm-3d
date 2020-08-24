@@ -2,6 +2,7 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen::JsValue;
 use web_sys::*;
 use web_sys::WebGlRenderingContext as GL;
+use wasm_bindgen::closure::Closure;
 
 pub fn initialize_webgl_context() -> Result<WebGlRenderingContext, JsValue> {
     let window = window().unwrap();
@@ -16,6 +17,40 @@ pub fn initialize_webgl_context() -> Result<WebGlRenderingContext, JsValue> {
     gl.clear_depth(1.);
 
     Ok(gl)
+}
 
+fn attach_mouse_down_handler(canvas: &HtmlCanvasElement) -> Result<(), JsValue> {
+    let handler = move |event: web_sys::MouseEvent| {
+        super::app_state::update_mouse_down(event.client_x() as f32, event.client_y() as f32, true);
+    };
 
+    let handler = Closure::wrap(Box::new(handler) as Box<dyn FnMut(_)>);
+    canvas.add_event_listener_with_callback("mousedown", handler.as_ref().unchecked_ref())?;
+    handler.forget();
+
+    Ok(())
+}
+
+fn attach_mouse_up_handler(canvas: &HtmlCanvasElement) -> Result<(), JsValue> {
+    let handler = move |event: web_sys::MouseEvent| {
+        super::app_state::update_mouse_down(event.client_x() as f32, event.client_y() as f32, false);
+    };
+
+    let handler = Closure::wrap(Box::new(handler) as Box<dyn FnMut(_)>);
+    canvas.add_event_listener_with_callback("mouseup", handler.as_ref().unchecked_ref())?;
+    handler.forget();
+
+    Ok(())
+}
+
+fn attach_mouse_move_handler(canvas: &HtmlCanvasElement) -> Result<(), JsValue> {
+    let handler = move |event: web_sys::MouseEvent| {
+        super::app_state::update_mouse_position(event.client_x() as f32, event.client_y() as f32);
+    };
+
+    let handler = Closure::wrap(Box::new(handler) as Box<dyn FnMut(_)>);
+    canvas.add_event_listener_with_callback("mousemove", handler.as_ref().unchecked_ref())?;
+    handler.forget();
+
+    Ok(())
 }

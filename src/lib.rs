@@ -81,8 +81,8 @@ impl GraphicsClient {
             current_state.control_right,
             current_state.canvas_height,
             current_state.canvas_width,
-            0.5,
-            0.5,
+            current_state.rotation_x_axis,
+            current_state.rotation_y_axis,
         );
     }
 }
