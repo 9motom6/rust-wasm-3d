@@ -24,8 +24,8 @@ extern "C" {
 pub struct GraphicsClient {
     gl: WebGlRenderingContext,
     program_color_2d: programs::Color2D,
-    program_color_2d_gradient: programs::Color2DGradient,
-
+    // program_color_2d_gradient: programs::Color2DGradient,
+    program_graph_3d: programs::Graph3D,
 }
 
 #[wasm_bindgen]
@@ -38,7 +38,8 @@ impl GraphicsClient {
         log("[RUST] Graphics client was initialized");
         Self {
             program_color_2d: programs::Color2D::new(&gl),
-            program_color_2d_gradient: programs::Color2DGradient::new(&gl),
+            // program_color_2d_gradient: programs::Color2DGradient::new(&gl),
+            program_graph_3d: programs::Graph3D::new(&gl),
             gl,
         }
     }
@@ -62,14 +63,26 @@ impl GraphicsClient {
             current_state.canvas_width,
         );
 
-        self.program_color_2d_gradient.render(
+        // self.program_color_2d_gradient.render(
+        //     &self.gl,
+        //     current_state.control_bottom + 20.,
+        //     current_state.control_top - 20.,
+        //     current_state.control_left + 20.,
+        //     current_state.control_right - 20.,
+        //     current_state.canvas_height,
+        //     current_state.canvas_width,
+        // );
+
+        self.program_graph_3d.render(
             &self.gl,
-            current_state.control_bottom + 20.,
-            current_state.control_top - 20.,
-            current_state.control_left + 20.,
-            current_state.control_right - 20.,
+            current_state.control_bottom,
+            current_state.control_top,
+            current_state.control_left,
+            current_state.control_right,
             current_state.canvas_height,
             current_state.canvas_width,
-        )
+            0.5,
+            0.5,
+        );
     }
 }

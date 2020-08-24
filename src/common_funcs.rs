@@ -1,5 +1,85 @@
 use web_sys::*;
 use web_sys::WebGlRenderingContext as GL;
+use nalgebra::{Matrix4, Perspective3};
+
+pub fn get_3d_projection_matrix(
+    bottom: f32,
+    top: f32,
+    left: f32,
+    right: f32,
+    canvas_height: f32,
+    canvas_width: f32,
+    rotation_angle_x_axis: f32,
+    rotation_angle_y_axis: f32,
+) -> [f32; 16] {
+    const FIELD_OF_VIEW: f32 = 45. * std::f32::consts::PI / 180.; // in radians
+    const Z_FAR: f32 = 100.;
+    const Z_NEAR: f32 = 0.1;
+    const Z_PLANE: f32 = -2.414213; // -1 / tan(π / 8)
+
+    let rotate_x_axis: [f32; 16] = [
+        1., 0.,                          0.,                            0.,
+        0., rotation_angle_x_axis.cos(), -rotation_angle_x_axis.sin(),  0.,
+        0., rotation_angle_x_axis.sin(), rotation_angle_x_axis.cos(),   0.,
+        0., 0.,                          0.,                            1.,
+    ];
+    let rotate_y_axis: [f32; 16] = [
+        rotation_angle_y_axis.cos(),  0., rotation_angle_y_axis.sin(), 0.,
+        0.,                           1., 0.,                          0.,
+        -rotation_angle_y_axis.sin(), 0., rotation_angle_y_axis.cos(), 0.,
+        0.,                           0., 0.,                          1.,
+    ];
+
+    let rotation_matrix = mult_matrix_4(rotate_x_axis, rotate_y_axis);
+
+    let aspect_ratio: f32 = canvas_width / canvas_height;
+    let scale_x = (right - left) - canvas_width;
+    let scale_y = (top - bottom) - canvas_height;
+    let scale = scale_y;
+
+    let translation_matrix: [f32; 16] = translation_matrix(
+        -1. + scale_x + 2. * left / canvas_width,
+        -1. + scale_y + 2. * bottom / canvas_height,
+        Z_PLANE,
+    );
+
+    let scale_matrix: [f32; 16] = scaling_matrix(scale, scale, 0.);
+    let rotation_scale = mult_matrix_4(rotation_matrix, scale_matrix);
+    let combined_transform = mult_matrix_4(rotation_scale, translation_matrix);
+    let perspective_matrix_tmp: Perspective3<f32> = Perspective3::new(aspect_ratio, FIELD_OF_VIEW, Z_NEAR, Z_FAR);
+    let mut perspective: [f32; 16] = [0.; 16];
+    perspective.copy_from_slice(perspective_matrix_tmp.as_matrix().as_slice());
+
+    mult_matrix_4(combined_transform, perspective)
+
+    // let normal_matrix = Matrix4::new(
+    //     rotation_matrix[0],
+    //     rotation_matrix[1],
+    //     rotation_matrix[2],
+    //     rotation_matrix[3],
+    //     rotation_matrix[4],
+    //     rotation_matrix[5],
+    //     rotation_matrix[6],
+    //     rotation_matrix[7],
+    //     rotation_matrix[8],
+    //     rotation_matrix[9],
+    //     rotation_matrix[10],
+    //     rotation_matrix[11],
+    //     rotation_matrix[12],
+    //     rotation_matrix[13],
+    //     rotation_matrix[14],
+    //     rotation_matrix[15],
+    // );
+    //
+    // match normal_matrix.try_inverse() {
+    //     Some(inv) => {
+    //         return_var.normals_rotation.copy_from_slice(inv.as_slice());
+    //     }
+    //     None => {}
+    // }
+
+    // return_var
+}
 
 pub fn link_program(
     gl: &WebGlRenderingContext,

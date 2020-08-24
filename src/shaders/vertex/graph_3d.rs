@@ -1,5 +1,5 @@
 pub const SHADER: &str = r#"
-    attrobite vec4 aPosition;
+    attribute vec4 aPosition;
 
     uniform mat4 uProjection;
     varying lowp vec4 vColor;
