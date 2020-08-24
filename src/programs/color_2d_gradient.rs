@@ -18,7 +18,7 @@ impl Color2DGradient {
         let program = cf::link_program(
             &gl,
             super::super::shaders::vertex::color_2d_gradient::SHADER,
-            super::super::shaders::fragment::color_2d_gradient::SHADER,
+            super::super::shaders::fragment::varying_color_from_vertex::SHADER,
         ).unwrap();
 
         let vertices_rect: [f32; 8] = [

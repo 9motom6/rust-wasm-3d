@@ -1,3 +1,4 @@
+use web_sys::WebGlProgram;
 use web_sys::*;
 use web_sys::WebGlRenderingContext as GL;
 use nalgebra::{Matrix4, Perspective3};
@@ -80,6 +81,42 @@ pub fn get_3d_projection_matrix(
 
     // return_var
 }
+
+pub fn get_position_grid_n_by_n(n: usize) -> (Vec<f32>, Vec<u16>) {
+    let n_plus_one = n + 1;
+    let mut positions: Vec<f32> = vec![0.; 3 * n_plus_one * n_plus_one];
+    let mut indices: Vec<u16> = vec![0; 6 * n * n];
+
+    let graph_layout_width: f32 = 2.;
+    let square_size: f32 = graph_layout_width / n as f32;
+
+    for z in 0..n_plus_one {
+        for x in 0..n_plus_one {
+            let start_pos_i = 3 * (z * n_plus_one + x);
+            positions[start_pos_i + 0] = -1. + (x as f32) * square_size;
+            positions[start_pos_i + 1] = 0.;
+            positions[start_pos_i + 2] = -1. + (z as f32) * square_size;
+
+            if z < n && x < n {
+                let start_index_i = 6 * (z * n + x);
+                let vertex_index_top_left = (z * n_plus_one) as u16;
+                let vertex_index_bottom_left = vertex_index_top_left + n_plus_one as u16;
+                let vertex_index_top_right = vertex_index_top_left + 1;
+                let vertex_index_bottom_right = vertex_index_bottom_left + 1;
+
+                indices[start_index_i + 0] = vertex_index_top_left;
+                indices[start_index_i + 1] = vertex_index_bottom_left;
+                indices[start_index_i + 2] = vertex_index_bottom_right;
+                indices[start_index_i + 3] = vertex_index_top_left;
+                indices[start_index_i + 4] = vertex_index_bottom_right;
+                indices[start_index_i + 5] = vertex_index_top_right;
+            }
+        }
+    }
+
+    (positions, indices)
+}
+
 
 pub fn link_program(
     gl: &WebGlRenderingContext,
